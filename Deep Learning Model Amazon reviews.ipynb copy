@@ -1,0 +1,1629 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "Bu-TKUm_3o-c"
+      },
+      "outputs": [],
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np "
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df = pd.read_csv('iphone_charger_reviews.csv')"
+      ],
+      "metadata": {
+        "id": "ni4GBGfz8DWp"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df.head()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 206
+        },
+        "id": "1a-aCRJg8Nna",
+        "outputId": "88d3861b-6baf-43c0-944d-e8914804ff7c"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "      review_date            handle  rating helpfulness_rating  \\\n",
+              "0  March 11, 2023   Dabombastic1984     5.0                  9   \n",
+              "1   April 5, 2023              Lily     5.0                  2   \n",
+              "2  March 24, 2023            aurica     5.0                One   \n",
+              "3   April 2, 2023       kim j stone     4.0                NaN   \n",
+              "4   April 8, 2023  Shatona Anderson     5.0                NaN   \n",
+              "\n",
+              "                                              review  \n",
+              "0  Let me start off by saying that the Apple MFi ...  \n",
+              "1  I bought these not realizing that they were la...  \n",
+              "2  I got 2 of these on sale and am very happy wit...  \n",
+              "3  Fast charges and so far very durable.  Arrived...  \n",
+              "4  I have a charger in my room and in my office, ...  "
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-e2bd1331-cd85-43f0-aa83-59742736fd03\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>review_date</th>\n",
+              "      <th>handle</th>\n",
+              "      <th>rating</th>\n",
+              "      <th>helpfulness_rating</th>\n",
+              "      <th>review</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>March 11, 2023</td>\n",
+              "      <td>Dabombastic1984</td>\n",
+              "      <td>5.0</td>\n",
+              "      <td>9</td>\n",
+              "      <td>Let me start off by saying that the Apple MFi ...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>April 5, 2023</td>\n",
+              "      <td>Lily</td>\n",
+              "      <td>5.0</td>\n",
+              "      <td>2</td>\n",
+              "      <td>I bought these not realizing that they were la...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>March 24, 2023</td>\n",
+              "      <td>aurica</td>\n",
+              "      <td>5.0</td>\n",
+              "      <td>One</td>\n",
+              "      <td>I got 2 of these on sale and am very happy wit...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>April 2, 2023</td>\n",
+              "      <td>kim j stone</td>\n",
+              "      <td>4.0</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>Fast charges and so far very durable.  Arrived...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>April 8, 2023</td>\n",
+              "      <td>Shatona Anderson</td>\n",
+              "      <td>5.0</td>\n",
+              "      <td>NaN</td>\n",
+              "      <td>I have a charger in my room and in my office, ...</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-e2bd1331-cd85-43f0-aa83-59742736fd03')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-e2bd1331-cd85-43f0-aa83-59742736fd03 button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-e2bd1331-cd85-43f0-aa83-59742736fd03');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 3
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df.info()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "r9eN0Os3Qp66",
+        "outputId": "443e9339-9100-4109-d968-efb52e7146fa"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "RangeIndex: 2133 entries, 0 to 2132\n",
+            "Data columns (total 5 columns):\n",
+            " #   Column              Non-Null Count  Dtype  \n",
+            "---  ------              --------------  -----  \n",
+            " 0   review_date         2133 non-null   object \n",
+            " 1   handle              2133 non-null   object \n",
+            " 2   rating              2133 non-null   float64\n",
+            " 3   helpfulness_rating  294 non-null    object \n",
+            " 4   review              2132 non-null   object \n",
+            "dtypes: float64(1), object(4)\n",
+            "memory usage: 83.4+ KB\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df['review'] = reviews_df['review'].astype('str')"
+      ],
+      "metadata": {
+        "id": "HTJrgvUYSFEU"
+      },
+      "execution_count": 5,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df.drop(['review_date',\t'handle', 'helpfulness_rating'], axis = 1, inplace = True)"
+      ],
+      "metadata": {
+        "id": "nZISvtSp8k0h"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df['recoded_rating'] = reviews_df['rating'].apply(lambda x: 1 if x > 3 else 0)"
+      ],
+      "metadata": {
+        "id": "aw7r-Oo68x8y"
+      },
+      "execution_count": 7,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import string\n",
+        "import nltk\n",
+        "import re\n",
+        "nltk.download('stopwords')\n",
+        "from nltk.corpus import stopwords\n",
+        "from nltk.stem import WordNetLemmatizer\n",
+        "nltk.download('wordnet')\n",
+        "nltk.download(\"omw-1.4\")\n",
+        "def preprocess(t):\n",
+        "    clean_t = [char for char in t if char not in string.punctuation]\n",
+        "    clean_t = ''.join(clean_t)\n",
+        "    clean_t = [word for word in clean_t.split(' ') if word not in stopwords.words('english')]\n",
+        "    lemmitizer = WordNetLemmatizer()\n",
+        "    clean_t = [lemmitizer.lemmatize(word) for word in clean_t]\n",
+        "    clean_t = ' '.join(clean_t)\n",
+        "    pattern = r'[0-9]'\n",
+        "    clean_t = re.sub(pattern, '', clean_t)\n",
+        "    clean_t = clean_t.lower()\n",
+        "    return clean_t"
+      ],
+      "metadata": {
+        "id": "GQdBHPnMm_xb",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "567fefec-cd93-420d-94dc-783433071844"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "[nltk_data] Downloading package stopwords to /root/nltk_data...\n",
+            "[nltk_data]   Unzipping corpora/stopwords.zip.\n",
+            "[nltk_data] Downloading package wordnet to /root/nltk_data...\n",
+            "[nltk_data] Downloading package omw-1.4 to /root/nltk_data...\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df['processed_review_text'] = reviews_df['review'].apply(preprocess)"
+      ],
+      "metadata": {
+        "id": "lg28swBcnFen"
+      },
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "reviews_df.head(2)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 112
+        },
+        "id": "Ui1PYTEb_PAS",
+        "outputId": "cf65d9f8-d6d4-40e0-fd88-a322cd615e47"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "   rating                                             review  recoded_rating  \\\n",
+              "0     5.0  Let me start off by saying that the Apple MFi ...               1   \n",
+              "1     5.0  I bought these not realizing that they were la...               1   \n",
+              "\n",
+              "                               processed_review_text  \n",
+              "0  let start saying apple mfi certified iphone fa...  \n",
+              "1  i bought realizing labeled fast charger i rece...  "
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-1947e1a8-4cc5-4d96-b6dc-4eb1be94f52f\">\n",
+              "    <div class=\"colab-df-container\">\n",
+              "      <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>rating</th>\n",
+              "      <th>review</th>\n",
+              "      <th>recoded_rating</th>\n",
+              "      <th>processed_review_text</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>5.0</td>\n",
+              "      <td>Let me start off by saying that the Apple MFi ...</td>\n",
+              "      <td>1</td>\n",
+              "      <td>let start saying apple mfi certified iphone fa...</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>5.0</td>\n",
+              "      <td>I bought these not realizing that they were la...</td>\n",
+              "      <td>1</td>\n",
+              "      <td>i bought realizing labeled fast charger i rece...</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "      <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-1947e1a8-4cc5-4d96-b6dc-4eb1be94f52f')\"\n",
+              "              title=\"Convert this dataframe to an interactive table.\"\n",
+              "              style=\"display:none;\">\n",
+              "        \n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M0 0h24v24H0V0z\" fill=\"none\"/>\n",
+              "    <path d=\"M18.56 5.44l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94zm-11 1L8.5 8.5l.94-2.06 2.06-.94-2.06-.94L8.5 2.5l-.94 2.06-2.06.94zm10 10l.94 2.06.94-2.06 2.06-.94-2.06-.94-.94-2.06-.94 2.06-2.06.94z\"/><path d=\"M17.41 7.96l-1.37-1.37c-.4-.4-.92-.59-1.43-.59-.52 0-1.04.2-1.43.59L10.3 9.45l-7.72 7.72c-.78.78-.78 2.05 0 2.83L4 21.41c.39.39.9.59 1.41.59.51 0 1.02-.2 1.41-.59l7.78-7.78 2.81-2.81c.8-.78.8-2.07 0-2.86zM5.41 20L4 18.59l7.72-7.72 1.47 1.35L5.41 20z\"/>\n",
+              "  </svg>\n",
+              "      </button>\n",
+              "      \n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      flex-wrap:wrap;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "      <script>\n",
+              "        const buttonEl =\n",
+              "          document.querySelector('#df-1947e1a8-4cc5-4d96-b6dc-4eb1be94f52f button.colab-df-convert');\n",
+              "        buttonEl.style.display =\n",
+              "          google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "        async function convertToInteractive(key) {\n",
+              "          const element = document.querySelector('#df-1947e1a8-4cc5-4d96-b6dc-4eb1be94f52f');\n",
+              "          const dataTable =\n",
+              "            await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                     [key], {});\n",
+              "          if (!dataTable) return;\n",
+              "\n",
+              "          const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "            '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "            + ' to learn more about interactive tables.';\n",
+              "          element.innerHTML = '';\n",
+              "          dataTable['output_type'] = 'display_data';\n",
+              "          await google.colab.output.renderOutput(dataTable, element);\n",
+              "          const docLink = document.createElement('div');\n",
+              "          docLink.innerHTML = docLinkHtml;\n",
+              "          element.appendChild(docLink);\n",
+              "        }\n",
+              "      </script>\n",
+              "    </div>\n",
+              "  </div>\n",
+              "  "
+            ]
+          },
+          "metadata": {},
+          "execution_count": 10
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from tensorflow.keras.preprocessing.sequence import pad_sequences\n",
+        "from tensorflow.keras.preprocessing.text import Tokenizer\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.decomposition import PCA\n",
+        "import matplotlib.pyplot as plt\n",
+        "import plotly.express as px\n",
+        "import tensorflow as tf"
+      ],
+      "metadata": {
+        "id": "QiqKeXqQAyY3"
+      },
+      "execution_count": 11,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "X_train, X_test, y_train, y_test = train_test_split(reviews_df['processed_review_text'].astype('str'), reviews_df['recoded_rating'], test_size=0.33, random_state=101)"
+      ],
+      "metadata": {
+        "id": "WN7XUNZgA-NS"
+      },
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "2 hidden layers 100 dimentions each, embedding layer = 100 dimentions, sequence length (input layer) = 200"
+      ],
+      "metadata": {
+        "id": "vDqXdHNX9WY8"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "vocab_size = 5000\n",
+        "embedding_dim = 100\n",
+        "max_length = 200\n",
+        "trunc_type='post'\n",
+        "oov_tok = \"<OOV>\"\n",
+        "\n",
+        "tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)\n",
+        "tokenizer.fit_on_texts(X_train)\n",
+        "\n",
+        "word_index = tokenizer.word_index\n",
+        "sequences = tokenizer.texts_to_sequences(X_train)\n",
+        "testing_sequences = tokenizer.texts_to_sequences(X_test)\n",
+        "\n",
+        "padded = pad_sequences(sequences, maxlen=max_length, truncating=trunc_type)  \n",
+        "testing_padded = pad_sequences(testing_sequences, maxlen=max_length)  "
+      ],
+      "metadata": {
+        "id": "5N-0CDG_FQ4h"
+      },
+      "execution_count": 13,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model = tf.keras.Sequential([\n",
+        "    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),\n",
+        "    tf.keras.layers.Flatten(),\n",
+        "    tf.keras.layers.Dense(100, activation='relu'),\n",
+        "    tf.keras.layers.Dense(100, activation='relu'),\n",
+        "    tf.keras.layers.Dense(1, activation='sigmoid')\n",
+        "])\n",
+        "model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['AUC'])\n",
+        "model.summary()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "tD9yAD87KWmv",
+        "outputId": "c3cbf348-f16a-433c-ae36-088fd3c2595b"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: \"sequential\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " embedding (Embedding)       (None, 200, 100)          500000    \n",
+            "                                                                 \n",
+            " flatten (Flatten)           (None, 20000)             0         \n",
+            "                                                                 \n",
+            " dense (Dense)               (None, 100)               2000100   \n",
+            "                                                                 \n",
+            " dense_1 (Dense)             (None, 100)               10100     \n",
+            "                                                                 \n",
+            " dense_2 (Dense)             (None, 1)                 101       \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 2,510,301\n",
+            "Trainable params: 2,510,301\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "history = model.fit(padded, y_train, epochs= 100, validation_data=(testing_padded, y_test))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "0ASuXXjT6WLj",
+        "outputId": "ade7ef2b-c145-45d9-d8cf-5f7ad28fdf01"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/100\n",
+            "45/45 [==============================] - 3s 32ms/step - loss: 0.6893 - auc: 0.5631 - val_loss: 0.6296 - val_auc: 0.8457\n",
+            "Epoch 2/100\n",
+            "45/45 [==============================] - 1s 27ms/step - loss: 0.4104 - auc: 0.9296 - val_loss: 0.2959 - val_auc: 0.9486\n",
+            "Epoch 3/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.1629 - auc: 0.9838 - val_loss: 0.2869 - val_auc: 0.9506\n",
+            "Epoch 4/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.0836 - auc: 0.9951 - val_loss: 0.2979 - val_auc: 0.9504\n",
+            "Epoch 5/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0508 - auc: 0.9984 - val_loss: 0.3401 - val_auc: 0.9456\n",
+            "Epoch 6/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0262 - auc: 0.9997 - val_loss: 0.3667 - val_auc: 0.9389\n",
+            "Epoch 7/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0145 - auc: 0.9999 - val_loss: 0.4157 - val_auc: 0.9371\n",
+            "Epoch 8/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0096 - auc: 1.0000 - val_loss: 0.4439 - val_auc: 0.9359\n",
+            "Epoch 9/100\n",
+            "45/45 [==============================] - 1s 32ms/step - loss: 0.0081 - auc: 1.0000 - val_loss: 0.4549 - val_auc: 0.9353\n",
+            "Epoch 10/100\n",
+            "45/45 [==============================] - 1s 30ms/step - loss: 0.0065 - auc: 1.0000 - val_loss: 0.4989 - val_auc: 0.9348\n",
+            "Epoch 11/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0045 - auc: 1.0000 - val_loss: 0.4987 - val_auc: 0.9333\n",
+            "Epoch 12/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0037 - auc: 1.0000 - val_loss: 0.5551 - val_auc: 0.9327\n",
+            "Epoch 13/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0036 - auc: 1.0000 - val_loss: 0.5278 - val_auc: 0.9328\n",
+            "Epoch 14/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0034 - auc: 1.0000 - val_loss: 0.5803 - val_auc: 0.9291\n",
+            "Epoch 15/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0045 - auc: 1.0000 - val_loss: 0.5791 - val_auc: 0.9262\n",
+            "Epoch 16/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0036 - auc: 1.0000 - val_loss: 0.6443 - val_auc: 0.9237\n",
+            "Epoch 17/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0030 - auc: 1.0000 - val_loss: 0.6028 - val_auc: 0.9311\n",
+            "Epoch 18/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.6388 - val_auc: 0.9302\n",
+            "Epoch 19/100\n",
+            "45/45 [==============================] - 1s 30ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 0.6517 - val_auc: 0.9255\n",
+            "Epoch 20/100\n",
+            "45/45 [==============================] - 2s 35ms/step - loss: 0.0036 - auc: 1.0000 - val_loss: 0.5638 - val_auc: 0.9266\n",
+            "Epoch 21/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0028 - auc: 1.0000 - val_loss: 0.7187 - val_auc: 0.9178\n",
+            "Epoch 22/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 0.6188 - val_auc: 0.9242\n",
+            "Epoch 23/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0049 - auc: 1.0000 - val_loss: 0.5893 - val_auc: 0.9269\n",
+            "Epoch 24/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0081 - auc: 0.9999 - val_loss: 0.8002 - val_auc: 0.8997\n",
+            "Epoch 25/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0046 - auc: 1.0000 - val_loss: 0.6940 - val_auc: 0.9115\n",
+            "Epoch 26/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.0031 - auc: 1.0000 - val_loss: 0.8477 - val_auc: 0.9037\n",
+            "Epoch 27/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0043 - auc: 1.0000 - val_loss: 0.6763 - val_auc: 0.9200\n",
+            "Epoch 28/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0017 - auc: 1.0000 - val_loss: 0.7530 - val_auc: 0.9146\n",
+            "Epoch 29/100\n",
+            "45/45 [==============================] - 1s 30ms/step - loss: 0.0022 - auc: 1.0000 - val_loss: 0.7508 - val_auc: 0.9105\n",
+            "Epoch 30/100\n",
+            "45/45 [==============================] - 1s 33ms/step - loss: 0.0030 - auc: 1.0000 - val_loss: 0.7880 - val_auc: 0.9149\n",
+            "Epoch 31/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0042 - auc: 1.0000 - val_loss: 0.6559 - val_auc: 0.9217\n",
+            "Epoch 32/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0037 - auc: 1.0000 - val_loss: 0.7296 - val_auc: 0.9184\n",
+            "Epoch 33/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0021 - auc: 1.0000 - val_loss: 0.7811 - val_auc: 0.9102\n",
+            "Epoch 34/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0031 - auc: 1.0000 - val_loss: 0.7213 - val_auc: 0.9174\n",
+            "Epoch 35/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.0037 - auc: 1.0000 - val_loss: 0.7111 - val_auc: 0.9138\n",
+            "Epoch 36/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0028 - auc: 1.0000 - val_loss: 0.7383 - val_auc: 0.9108\n",
+            "Epoch 37/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0040 - auc: 1.0000 - val_loss: 0.8634 - val_auc: 0.9082\n",
+            "Epoch 38/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 0.7295 - val_auc: 0.9115\n",
+            "Epoch 39/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0026 - auc: 1.0000 - val_loss: 0.9560 - val_auc: 0.9072\n",
+            "Epoch 40/100\n",
+            "45/45 [==============================] - 2s 36ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.8643 - val_auc: 0.9022\n",
+            "Epoch 41/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0057 - auc: 1.0000 - val_loss: 1.1000 - val_auc: 0.8991\n",
+            "Epoch 42/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0055 - auc: 0.9993 - val_loss: 0.8934 - val_auc: 0.9016\n",
+            "Epoch 43/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0068 - auc: 1.0000 - val_loss: 0.7156 - val_auc: 0.9043\n",
+            "Epoch 44/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0064 - auc: 1.0000 - val_loss: 0.8481 - val_auc: 0.9025\n",
+            "Epoch 45/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0102 - auc: 0.9999 - val_loss: 1.5969 - val_auc: 0.8554\n",
+            "Epoch 46/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0166 - auc: 0.9999 - val_loss: 1.0659 - val_auc: 0.8850\n",
+            "Epoch 47/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0029 - auc: 1.0000 - val_loss: 1.0591 - val_auc: 0.8928\n",
+            "Epoch 48/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0030 - auc: 1.0000 - val_loss: 0.9846 - val_auc: 0.8921\n",
+            "Epoch 49/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0020 - auc: 1.0000 - val_loss: 0.9970 - val_auc: 0.8883\n",
+            "Epoch 50/100\n",
+            "45/45 [==============================] - 1s 31ms/step - loss: 0.0020 - auc: 1.0000 - val_loss: 0.9942 - val_auc: 0.8892\n",
+            "Epoch 51/100\n",
+            "45/45 [==============================] - 1s 32ms/step - loss: 0.0034 - auc: 1.0000 - val_loss: 0.8791 - val_auc: 0.9034\n",
+            "Epoch 52/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.9656 - val_auc: 0.8963\n",
+            "Epoch 53/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 1.0054 - val_auc: 0.8901\n",
+            "Epoch 54/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0346 - val_auc: 0.8895\n",
+            "Epoch 55/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 1.0217 - val_auc: 0.8893\n",
+            "Epoch 56/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 1.0200 - val_auc: 0.8893\n",
+            "Epoch 57/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0089 - val_auc: 0.8903\n",
+            "Epoch 58/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0015 - auc: 1.0000 - val_loss: 1.0550 - val_auc: 0.8871\n",
+            "Epoch 59/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0202 - val_auc: 0.8906\n",
+            "Epoch 60/100\n",
+            "45/45 [==============================] - 1s 27ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0374 - val_auc: 0.8888\n",
+            "Epoch 61/100\n",
+            "45/45 [==============================] - 2s 35ms/step - loss: 0.0015 - auc: 1.0000 - val_loss: 1.0568 - val_auc: 0.8865\n",
+            "Epoch 62/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0511 - val_auc: 0.8876\n",
+            "Epoch 63/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0557 - val_auc: 0.8877\n",
+            "Epoch 64/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0644 - val_auc: 0.8868\n",
+            "Epoch 65/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0793 - val_auc: 0.8873\n",
+            "Epoch 66/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0404 - val_auc: 0.8888\n",
+            "Epoch 67/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0018 - auc: 1.0000 - val_loss: 1.0175 - val_auc: 0.8905\n",
+            "Epoch 68/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0530 - val_auc: 0.8882\n",
+            "Epoch 69/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 1.0664 - val_auc: 0.8874\n",
+            "Epoch 70/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0527 - val_auc: 0.8883\n",
+            "Epoch 71/100\n",
+            "45/45 [==============================] - 2s 35ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0961 - val_auc: 0.8858\n",
+            "Epoch 72/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.0737 - val_auc: 0.8875\n",
+            "Epoch 73/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0865 - val_auc: 0.8878\n",
+            "Epoch 74/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0782 - val_auc: 0.8876\n",
+            "Epoch 75/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.1004 - val_auc: 0.8866\n",
+            "Epoch 76/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0734 - val_auc: 0.8892\n",
+            "Epoch 77/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0855 - val_auc: 0.8888\n",
+            "Epoch 78/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0015 - auc: 1.0000 - val_loss: 1.0911 - val_auc: 0.8889\n",
+            "Epoch 79/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.1171 - val_auc: 0.8864\n",
+            "Epoch 80/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.0910 - val_auc: 0.8876\n",
+            "Epoch 81/100\n",
+            "45/45 [==============================] - 2s 35ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1056 - val_auc: 0.8890\n",
+            "Epoch 82/100\n",
+            "45/45 [==============================] - 2s 38ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1240 - val_auc: 0.8862\n",
+            "Epoch 83/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.1134 - val_auc: 0.8884\n",
+            "Epoch 84/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1276 - val_auc: 0.8863\n",
+            "Epoch 85/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0724 - val_auc: 0.8885\n",
+            "Epoch 86/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1064 - val_auc: 0.8901\n",
+            "Epoch 87/100\n",
+            "45/45 [==============================] - 1s 23ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1346 - val_auc: 0.8888\n",
+            "Epoch 88/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1325 - val_auc: 0.8876\n",
+            "Epoch 89/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1382 - val_auc: 0.8890\n",
+            "Epoch 90/100\n",
+            "45/45 [==============================] - 1s 31ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1747 - val_auc: 0.8858\n",
+            "Epoch 91/100\n",
+            "45/45 [==============================] - 2s 48ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.1722 - val_auc: 0.8868\n",
+            "Epoch 92/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1362 - val_auc: 0.8873\n",
+            "Epoch 93/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1417 - val_auc: 0.8874\n",
+            "Epoch 94/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.1590 - val_auc: 0.8841\n",
+            "Epoch 95/100\n",
+            "45/45 [==============================] - 1s 24ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1375 - val_auc: 0.8883\n",
+            "Epoch 96/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1664 - val_auc: 0.8854\n",
+            "Epoch 97/100\n",
+            "45/45 [==============================] - 1s 26ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.1550 - val_auc: 0.8863\n",
+            "Epoch 98/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0980 - val_auc: 0.8907\n",
+            "Epoch 99/100\n",
+            "45/45 [==============================] - 1s 25ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.2494 - val_auc: 0.8823\n",
+            "Epoch 100/100\n",
+            "45/45 [==============================] - 1s 30ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.2395 - val_auc: 0.8845\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = model.predict(testing_padded)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "CpC_1DdJ7Fta",
+        "outputId": "32f57c11-4920-4385-cec4-72fe80c3a5a5"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "22/22 [==============================] - 0s 4ms/step\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = (y_pred >= 0.5)"
+      ],
+      "metadata": {
+        "id": "rBZJQBxk7-YV"
+      },
+      "execution_count": 17,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import classification_report,confusion_matrix, roc_auc_score"
+      ],
+      "metadata": {
+        "id": "aLL5e5ze8Lt4"
+      },
+      "execution_count": 18,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(classification_report(y_test,y_pred))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9rzHfzF8Yc5",
+        "outputId": "2f5cb425-afe7-44fb-efde-a6e00a4a2b5b"
+      },
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "              precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.87      0.84      0.85       400\n",
+            "           1       0.80      0.83      0.81       304\n",
+            "\n",
+            "    accuracy                           0.84       704\n",
+            "   macro avg       0.83      0.83      0.83       704\n",
+            "weighted avg       0.84      0.84      0.84       704\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print('ROC AUC: ', roc_auc_score(y_test,model.predict(testing_padded)))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "y1A1nfM39Mpw",
+        "outputId": "02fb4d23-1b88-4b9d-c99e-399e2a9c2a13"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "22/22 [==============================] - 0s 6ms/step\n",
+            "ROC AUC:  0.9169613486842104\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "tf.keras.backend.clear_session()"
+      ],
+      "metadata": {
+        "id": "UL4bEtVw-DD7"
+      },
+      "execution_count": 21,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "2 hidden layers 200 dimentions each, embedding layer = 200 dimentions, sequence length = 300"
+      ],
+      "metadata": {
+        "id": "N1od60tu-RpI"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "vocab_size = 5000\n",
+        "embedding_dim = 200\n",
+        "max_length = 300\n",
+        "trunc_type='post'\n",
+        "oov_tok = \"<OOV>\"\n",
+        "\n",
+        "tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)\n",
+        "tokenizer.fit_on_texts(X_train)\n",
+        "\n",
+        "word_index = tokenizer.word_index\n",
+        "sequences = tokenizer.texts_to_sequences(X_train)\n",
+        "testing_sequences = tokenizer.texts_to_sequences(X_test)\n",
+        "\n",
+        "padded = pad_sequences(sequences, maxlen=max_length, truncating=trunc_type)  \n",
+        "testing_padded = pad_sequences(testing_sequences, maxlen=max_length) "
+      ],
+      "metadata": {
+        "id": "sO0dSTLt-Ecu"
+      },
+      "execution_count": 22,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model = tf.keras.Sequential([\n",
+        "    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),\n",
+        "    tf.keras.layers.Flatten(),\n",
+        "    tf.keras.layers.Dense(200, activation='relu'),\n",
+        "    tf.keras.layers.Dense(200, activation='relu'),\n",
+        "    tf.keras.layers.Dense(1, activation='sigmoid')\n",
+        "])\n",
+        "model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['AUC'])\n",
+        "model.summary()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "S13y2R9h-tk7",
+        "outputId": "6e320b1c-3273-4927-a917-e2d5e5f668e4"
+      },
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: \"sequential\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " embedding (Embedding)       (None, 300, 200)          1000000   \n",
+            "                                                                 \n",
+            " flatten (Flatten)           (None, 60000)             0         \n",
+            "                                                                 \n",
+            " dense (Dense)               (None, 200)               12000200  \n",
+            "                                                                 \n",
+            " dense_1 (Dense)             (None, 200)               40200     \n",
+            "                                                                 \n",
+            " dense_2 (Dense)             (None, 1)                 201       \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 13,040,601\n",
+            "Trainable params: 13,040,601\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "history = model.fit(padded, y_train, epochs= 80, validation_data=(testing_padded, y_test))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "qNWcOR8y-2jS",
+        "outputId": "ab63e227-f31a-4b3e-b0ad-810f5d90fa1b"
+      },
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/80\n",
+            "45/45 [==============================] - 8s 154ms/step - loss: 0.7570 - auc: 0.5250 - val_loss: 0.6423 - val_auc: 0.8806\n",
+            "Epoch 2/80\n",
+            "45/45 [==============================] - 7s 163ms/step - loss: 0.4112 - auc: 0.9204 - val_loss: 0.2822 - val_auc: 0.9509\n",
+            "Epoch 3/80\n",
+            "45/45 [==============================] - 7s 166ms/step - loss: 0.1412 - auc: 0.9864 - val_loss: 0.2685 - val_auc: 0.9545\n",
+            "Epoch 4/80\n",
+            "45/45 [==============================] - 6s 142ms/step - loss: 0.0767 - auc: 0.9935 - val_loss: 0.2863 - val_auc: 0.9524\n",
+            "Epoch 5/80\n",
+            "45/45 [==============================] - 7s 164ms/step - loss: 0.0388 - auc: 0.9989 - val_loss: 0.3461 - val_auc: 0.9469\n",
+            "Epoch 6/80\n",
+            "45/45 [==============================] - 6s 144ms/step - loss: 0.0212 - auc: 0.9998 - val_loss: 0.3653 - val_auc: 0.9432\n",
+            "Epoch 7/80\n",
+            "45/45 [==============================] - 7s 161ms/step - loss: 0.0109 - auc: 1.0000 - val_loss: 0.4000 - val_auc: 0.9412\n",
+            "Epoch 8/80\n",
+            "45/45 [==============================] - 7s 158ms/step - loss: 0.0088 - auc: 1.0000 - val_loss: 0.4281 - val_auc: 0.9411\n",
+            "Epoch 9/80\n",
+            "45/45 [==============================] - 7s 149ms/step - loss: 0.0050 - auc: 1.0000 - val_loss: 0.4504 - val_auc: 0.9391\n",
+            "Epoch 10/80\n",
+            "45/45 [==============================] - 7s 167ms/step - loss: 0.0064 - auc: 1.0000 - val_loss: 0.4335 - val_auc: 0.9392\n",
+            "Epoch 11/80\n",
+            "45/45 [==============================] - 7s 149ms/step - loss: 0.0052 - auc: 1.0000 - val_loss: 0.4673 - val_auc: 0.9377\n",
+            "Epoch 12/80\n",
+            "45/45 [==============================] - 7s 165ms/step - loss: 0.0039 - auc: 1.0000 - val_loss: 0.5135 - val_auc: 0.9352\n",
+            "Epoch 13/80\n",
+            "45/45 [==============================] - 7s 156ms/step - loss: 0.0041 - auc: 1.0000 - val_loss: 0.4902 - val_auc: 0.9381\n",
+            "Epoch 14/80\n",
+            "45/45 [==============================] - 7s 150ms/step - loss: 0.0039 - auc: 1.0000 - val_loss: 0.5362 - val_auc: 0.9282\n",
+            "Epoch 15/80\n",
+            "45/45 [==============================] - 7s 161ms/step - loss: 0.0038 - auc: 1.0000 - val_loss: 0.5530 - val_auc: 0.9342\n",
+            "Epoch 16/80\n",
+            "45/45 [==============================] - 7s 151ms/step - loss: 0.0034 - auc: 1.0000 - val_loss: 0.6134 - val_auc: 0.9256\n",
+            "Epoch 17/80\n",
+            "45/45 [==============================] - 7s 166ms/step - loss: 0.0023 - auc: 1.0000 - val_loss: 0.5459 - val_auc: 0.9343\n",
+            "Epoch 18/80\n",
+            "45/45 [==============================] - 7s 150ms/step - loss: 0.0023 - auc: 1.0000 - val_loss: 0.5821 - val_auc: 0.9316\n",
+            "Epoch 19/80\n",
+            "45/45 [==============================] - 7s 156ms/step - loss: 0.0036 - auc: 1.0000 - val_loss: 0.7631 - val_auc: 0.9204\n",
+            "Epoch 20/80\n",
+            "45/45 [==============================] - 7s 159ms/step - loss: 0.0044 - auc: 1.0000 - val_loss: 0.8898 - val_auc: 0.9105\n",
+            "Epoch 21/80\n",
+            "45/45 [==============================] - 7s 147ms/step - loss: 0.0034 - auc: 1.0000 - val_loss: 0.8215 - val_auc: 0.9113\n",
+            "Epoch 22/80\n",
+            "45/45 [==============================] - 7s 165ms/step - loss: 0.0048 - auc: 1.0000 - val_loss: 0.6332 - val_auc: 0.9190\n",
+            "Epoch 23/80\n",
+            "45/45 [==============================] - 7s 150ms/step - loss: 0.0060 - auc: 1.0000 - val_loss: 0.5840 - val_auc: 0.9281\n",
+            "Epoch 24/80\n",
+            "45/45 [==============================] - 7s 157ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 0.8142 - val_auc: 0.9146\n",
+            "Epoch 25/80\n",
+            "45/45 [==============================] - 7s 165ms/step - loss: 0.0020 - auc: 1.0000 - val_loss: 0.7022 - val_auc: 0.9164\n",
+            "Epoch 26/80\n",
+            "45/45 [==============================] - 7s 148ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 0.7308 - val_auc: 0.9203\n",
+            "Epoch 27/80\n",
+            "45/45 [==============================] - 7s 167ms/step - loss: 0.0062 - auc: 0.9993 - val_loss: 0.8129 - val_auc: 0.9111\n",
+            "Epoch 28/80\n",
+            "45/45 [==============================] - 6s 144ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 0.6591 - val_auc: 0.9229\n",
+            "Epoch 29/80\n",
+            "45/45 [==============================] - 8s 167ms/step - loss: 0.0056 - auc: 1.0000 - val_loss: 1.0196 - val_auc: 0.9044\n",
+            "Epoch 30/80\n",
+            "45/45 [==============================] - 7s 165ms/step - loss: 0.2404 - auc: 0.9805 - val_loss: 1.6217 - val_auc: 0.8944\n",
+            "Epoch 31/80\n",
+            "45/45 [==============================] - 6s 143ms/step - loss: 0.0737 - auc: 0.9930 - val_loss: 0.7642 - val_auc: 0.9241\n",
+            "Epoch 32/80\n",
+            "45/45 [==============================] - 7s 166ms/step - loss: 0.0077 - auc: 1.0000 - val_loss: 0.7829 - val_auc: 0.9209\n",
+            "Epoch 33/80\n",
+            "45/45 [==============================] - 7s 149ms/step - loss: 0.0037 - auc: 1.0000 - val_loss: 0.7949 - val_auc: 0.9192\n",
+            "Epoch 34/80\n",
+            "45/45 [==============================] - 7s 160ms/step - loss: 0.0030 - auc: 1.0000 - val_loss: 0.8488 - val_auc: 0.9132\n",
+            "Epoch 35/80\n",
+            "45/45 [==============================] - 7s 160ms/step - loss: 0.0018 - auc: 1.0000 - val_loss: 0.8843 - val_auc: 0.9112\n",
+            "Epoch 36/80\n",
+            "45/45 [==============================] - 7s 152ms/step - loss: 0.0028 - auc: 1.0000 - val_loss: 0.9023 - val_auc: 0.9103\n",
+            "Epoch 37/80\n",
+            "45/45 [==============================] - 8s 170ms/step - loss: 0.0024 - auc: 1.0000 - val_loss: 0.8928 - val_auc: 0.9111\n",
+            "Epoch 38/80\n",
+            "45/45 [==============================] - 7s 147ms/step - loss: 0.0019 - auc: 1.0000 - val_loss: 0.9232 - val_auc: 0.9139\n",
+            "Epoch 39/80\n",
+            "45/45 [==============================] - 7s 166ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 0.8706 - val_auc: 0.9131\n",
+            "Epoch 40/80\n",
+            "45/45 [==============================] - 8s 176ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.9047 - val_auc: 0.9154\n",
+            "Epoch 41/80\n",
+            "45/45 [==============================] - 7s 153ms/step - loss: 0.0023 - auc: 1.0000 - val_loss: 0.8895 - val_auc: 0.9116\n",
+            "Epoch 42/80\n",
+            "45/45 [==============================] - 8s 171ms/step - loss: 0.0022 - auc: 1.0000 - val_loss: 0.8718 - val_auc: 0.9155\n",
+            "Epoch 43/80\n",
+            "45/45 [==============================] - 7s 149ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 0.9009 - val_auc: 0.9115\n",
+            "Epoch 44/80\n",
+            "45/45 [==============================] - 8s 172ms/step - loss: 0.0018 - auc: 1.0000 - val_loss: 0.9393 - val_auc: 0.9069\n",
+            "Epoch 45/80\n",
+            "45/45 [==============================] - 7s 165ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.9480 - val_auc: 0.9134\n",
+            "Epoch 46/80\n",
+            "45/45 [==============================] - 7s 147ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 0.9116 - val_auc: 0.9115\n",
+            "Epoch 47/80\n",
+            "45/45 [==============================] - 8s 169ms/step - loss: 0.0018 - auc: 1.0000 - val_loss: 0.9342 - val_auc: 0.9129\n",
+            "Epoch 48/80\n",
+            "45/45 [==============================] - 7s 153ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 0.9509 - val_auc: 0.9070\n",
+            "Epoch 49/80\n",
+            "45/45 [==============================] - 8s 167ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 0.9958 - val_auc: 0.9118\n",
+            "Epoch 50/80\n",
+            "45/45 [==============================] - 11s 257ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.9812 - val_auc: 0.9072\n",
+            "Epoch 51/80\n",
+            "45/45 [==============================] - 13s 297ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 0.9617 - val_auc: 0.9092\n",
+            "Epoch 52/80\n",
+            "45/45 [==============================] - 8s 178ms/step - loss: 0.0015 - auc: 1.0000 - val_loss: 0.9898 - val_auc: 0.9127\n",
+            "Epoch 53/80\n",
+            "45/45 [==============================] - 7s 163ms/step - loss: 0.0019 - auc: 1.0000 - val_loss: 0.9870 - val_auc: 0.9071\n",
+            "Epoch 54/80\n",
+            "45/45 [==============================] - 8s 181ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0098 - val_auc: 0.9115\n",
+            "Epoch 55/80\n",
+            "45/45 [==============================] - 8s 184ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0046 - val_auc: 0.9115\n",
+            "Epoch 56/80\n",
+            "45/45 [==============================] - 8s 167ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0158 - val_auc: 0.9062\n",
+            "Epoch 57/80\n",
+            "45/45 [==============================] - 8s 183ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.0347 - val_auc: 0.9067\n",
+            "Epoch 58/80\n",
+            "45/45 [==============================] - 8s 185ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0545 - val_auc: 0.9071\n",
+            "Epoch 59/80\n",
+            "45/45 [==============================] - 8s 169ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0612 - val_auc: 0.9072\n",
+            "Epoch 60/80\n",
+            "45/45 [==============================] - 8s 182ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0752 - val_auc: 0.9061\n",
+            "Epoch 61/80\n",
+            "45/45 [==============================] - 8s 183ms/step - loss: 0.0014 - auc: 1.0000 - val_loss: 1.0417 - val_auc: 0.9117\n",
+            "Epoch 62/80\n",
+            "45/45 [==============================] - 7s 162ms/step - loss: 0.0015 - auc: 1.0000 - val_loss: 0.9201 - val_auc: 0.9125\n",
+            "Epoch 63/80\n",
+            "45/45 [==============================] - 8s 184ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.9497 - val_auc: 0.9160\n",
+            "Epoch 64/80\n",
+            "45/45 [==============================] - 8s 185ms/step - loss: 0.0018 - auc: 1.0000 - val_loss: 0.9492 - val_auc: 0.9155\n",
+            "Epoch 65/80\n",
+            "45/45 [==============================] - 8s 170ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 0.9883 - val_auc: 0.9114\n",
+            "Epoch 66/80\n",
+            "45/45 [==============================] - 8s 185ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0235 - val_auc: 0.9097\n",
+            "Epoch 67/80\n",
+            "45/45 [==============================] - 8s 184ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0562 - val_auc: 0.9079\n",
+            "Epoch 68/80\n",
+            "45/45 [==============================] - 7s 167ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0633 - val_auc: 0.9082\n",
+            "Epoch 69/80\n",
+            "45/45 [==============================] - 8s 177ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.0714 - val_auc: 0.9082\n",
+            "Epoch 70/80\n",
+            "45/45 [==============================] - 8s 181ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.0893 - val_auc: 0.9071\n",
+            "Epoch 71/80\n",
+            "45/45 [==============================] - 7s 166ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1036 - val_auc: 0.9071\n",
+            "Epoch 72/80\n",
+            "45/45 [==============================] - 8s 176ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.1218 - val_auc: 0.9048\n",
+            "Epoch 73/80\n",
+            "45/45 [==============================] - 8s 183ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.1300 - val_auc: 0.9069\n",
+            "Epoch 74/80\n",
+            "45/45 [==============================] - 7s 167ms/step - loss: 0.0010 - auc: 1.0000 - val_loss: 1.1423 - val_auc: 0.9061\n",
+            "Epoch 75/80\n",
+            "45/45 [==============================] - 8s 181ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.1502 - val_auc: 0.9055\n",
+            "Epoch 76/80\n",
+            "45/45 [==============================] - 8s 182ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 1.0293 - val_auc: 0.9073\n",
+            "Epoch 77/80\n",
+            "45/45 [==============================] - 7s 165ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 0.9586 - val_auc: 0.9157\n",
+            "Epoch 78/80\n",
+            "45/45 [==============================] - 8s 178ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.0053 - val_auc: 0.9138\n",
+            "Epoch 79/80\n",
+            "45/45 [==============================] - 8s 178ms/step - loss: 0.0012 - auc: 1.0000 - val_loss: 1.0430 - val_auc: 0.9121\n",
+            "Epoch 80/80\n",
+            "45/45 [==============================] - 7s 167ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 1.0687 - val_auc: 0.9112\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Adjusted # of epochs to 80 "
+      ],
+      "metadata": {
+        "id": "5lU-H6ym-9Ph"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = model.predict(testing_padded)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "pzmZSpem_HF6",
+        "outputId": "633339c1-3bb5-4663-acd3-7004aca42bc9"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "22/22 [==============================] - 0s 18ms/step\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = (y_pred >= 0.5)"
+      ],
+      "metadata": {
+        "id": "AeWlia75_vb7"
+      },
+      "execution_count": 26,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(classification_report(y_test,y_pred))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "A8dWBKop_ppb",
+        "outputId": "5e83d81c-abcc-44b3-d82e-8b3922a3472a"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "              precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.88      0.88      0.88       400\n",
+            "           1       0.85      0.85      0.85       304\n",
+            "\n",
+            "    accuracy                           0.87       704\n",
+            "   macro avg       0.87      0.87      0.87       704\n",
+            "weighted avg       0.87      0.87      0.87       704\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print('ROC AUC: ', roc_auc_score(y_test,model.predict(testing_padded)))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "k5fwKb_8_1o-",
+        "outputId": "e8e711b0-e09f-48ab-9d96-269a15f22ab0"
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "22/22 [==============================] - 0s 18ms/step\n",
+            "ROC AUC:  0.9315542763157895\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "tf.keras.backend.clear_session()"
+      ],
+      "metadata": {
+        "id": "jlnEjPmeAj5u"
+      },
+      "execution_count": 29,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "2 hidden layers 300 dimentions each, embeding layer = 300 dimentions, sequence length = 500"
+      ],
+      "metadata": {
+        "id": "NTLrnkAlAAXX"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "vocab_size = 5000\n",
+        "embedding_dim = 300\n",
+        "max_length = 500\n",
+        "trunc_type='post'\n",
+        "oov_tok = \"<OOV>\"\n",
+        "\n",
+        "tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)\n",
+        "tokenizer.fit_on_texts(X_train)\n",
+        "\n",
+        "word_index = tokenizer.word_index\n",
+        "sequences = tokenizer.texts_to_sequences(X_train)\n",
+        "testing_sequences = tokenizer.texts_to_sequences(X_test)\n",
+        "\n",
+        "padded = pad_sequences(sequences, maxlen=max_length, truncating=trunc_type)  \n",
+        "testing_padded = pad_sequences(testing_sequences, maxlen=max_length) "
+      ],
+      "metadata": {
+        "id": "TwXhdArTA1fv"
+      },
+      "execution_count": 30,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model = tf.keras.Sequential([\n",
+        "    tf.keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),\n",
+        "    tf.keras.layers.Flatten(),\n",
+        "    tf.keras.layers.Dense(300, activation='relu'),\n",
+        "    tf.keras.layers.Dense(300, activation='relu'),\n",
+        "    tf.keras.layers.Dense(1, activation='sigmoid')\n",
+        "])\n",
+        "model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['AUC'])\n",
+        "model.summary()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ZGccAzW2BAY_",
+        "outputId": "14fda337-aa40-4e34-fed8-34f94627a55a"
+      },
+      "execution_count": 31,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Model: \"sequential\"\n",
+            "_________________________________________________________________\n",
+            " Layer (type)                Output Shape              Param #   \n",
+            "=================================================================\n",
+            " embedding (Embedding)       (None, 500, 300)          1500000   \n",
+            "                                                                 \n",
+            " flatten (Flatten)           (None, 150000)            0         \n",
+            "                                                                 \n",
+            " dense (Dense)               (None, 300)               45000300  \n",
+            "                                                                 \n",
+            " dense_1 (Dense)             (None, 300)               90300     \n",
+            "                                                                 \n",
+            " dense_2 (Dense)             (None, 1)                 301       \n",
+            "                                                                 \n",
+            "=================================================================\n",
+            "Total params: 46,590,901\n",
+            "Trainable params: 46,590,901\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "history = model.fit(padded, y_train, epochs= 50, validation_data=(testing_padded, y_test))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "4YqbsLXOBHq5",
+        "outputId": "86025a30-608e-42c9-b400-3b903461ca17"
+      },
+      "execution_count": 32,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/50\n",
+            "45/45 [==============================] - 26s 551ms/step - loss: 1.0224 - auc: 0.5360 - val_loss: 0.6840 - val_auc: 0.8116\n",
+            "Epoch 2/50\n",
+            "45/45 [==============================] - 24s 538ms/step - loss: 0.4706 - auc: 0.8607 - val_loss: 0.3329 - val_auc: 0.9431\n",
+            "Epoch 3/50\n",
+            "45/45 [==============================] - 25s 547ms/step - loss: 0.1807 - auc: 0.9793 - val_loss: 0.3099 - val_auc: 0.9506\n",
+            "Epoch 4/50\n",
+            "45/45 [==============================] - 25s 552ms/step - loss: 0.0929 - auc: 0.9933 - val_loss: 0.4073 - val_auc: 0.9482\n",
+            "Epoch 5/50\n",
+            "45/45 [==============================] - 33s 748ms/step - loss: 0.0636 - auc: 0.9975 - val_loss: 0.3547 - val_auc: 0.9465\n",
+            "Epoch 6/50\n",
+            "45/45 [==============================] - 25s 548ms/step - loss: 0.0248 - auc: 0.9997 - val_loss: 0.4154 - val_auc: 0.9351\n",
+            "Epoch 7/50\n",
+            "45/45 [==============================] - 24s 546ms/step - loss: 0.0146 - auc: 0.9999 - val_loss: 0.4556 - val_auc: 0.9347\n",
+            "Epoch 8/50\n",
+            "45/45 [==============================] - 24s 544ms/step - loss: 0.0068 - auc: 1.0000 - val_loss: 0.4945 - val_auc: 0.9345\n",
+            "Epoch 9/50\n",
+            "45/45 [==============================] - 25s 565ms/step - loss: 0.0066 - auc: 1.0000 - val_loss: 0.5198 - val_auc: 0.9328\n",
+            "Epoch 10/50\n",
+            "45/45 [==============================] - 24s 544ms/step - loss: 0.0040 - auc: 1.0000 - val_loss: 0.5450 - val_auc: 0.9321\n",
+            "Epoch 11/50\n",
+            "45/45 [==============================] - 25s 560ms/step - loss: 0.0038 - auc: 1.0000 - val_loss: 0.5679 - val_auc: 0.9302\n",
+            "Epoch 12/50\n",
+            "45/45 [==============================] - 25s 551ms/step - loss: 0.0028 - auc: 1.0000 - val_loss: 0.6129 - val_auc: 0.9301\n",
+            "Epoch 13/50\n",
+            "45/45 [==============================] - 25s 565ms/step - loss: 0.0030 - auc: 1.0000 - val_loss: 0.5977 - val_auc: 0.9273\n",
+            "Epoch 14/50\n",
+            "45/45 [==============================] - 27s 601ms/step - loss: 0.0024 - auc: 1.0000 - val_loss: 0.6354 - val_auc: 0.9277\n",
+            "Epoch 15/50\n",
+            "45/45 [==============================] - 36s 814ms/step - loss: 0.0041 - auc: 1.0000 - val_loss: 0.6200 - val_auc: 0.9221\n",
+            "Epoch 16/50\n",
+            "45/45 [==============================] - 25s 567ms/step - loss: 0.0026 - auc: 1.0000 - val_loss: 0.7515 - val_auc: 0.9216\n",
+            "Epoch 17/50\n",
+            "45/45 [==============================] - 25s 567ms/step - loss: 0.0025 - auc: 1.0000 - val_loss: 0.6533 - val_auc: 0.9227\n",
+            "Epoch 18/50\n",
+            "45/45 [==============================] - 26s 569ms/step - loss: 0.0056 - auc: 1.0000 - val_loss: 0.5884 - val_auc: 0.9263\n",
+            "Epoch 19/50\n",
+            "45/45 [==============================] - 25s 564ms/step - loss: 0.0055 - auc: 1.0000 - val_loss: 0.5992 - val_auc: 0.9297\n",
+            "Epoch 20/50\n",
+            "45/45 [==============================] - 25s 557ms/step - loss: 0.0059 - auc: 1.0000 - val_loss: 0.6258 - val_auc: 0.9258\n",
+            "Epoch 21/50\n",
+            "45/45 [==============================] - 25s 566ms/step - loss: 0.0046 - auc: 1.0000 - val_loss: 0.7973 - val_auc: 0.9058\n",
+            "Epoch 22/50\n",
+            "45/45 [==============================] - 27s 608ms/step - loss: 0.0070 - auc: 0.9999 - val_loss: 0.7103 - val_auc: 0.9108\n",
+            "Epoch 23/50\n",
+            "45/45 [==============================] - 26s 572ms/step - loss: 0.0050 - auc: 1.0000 - val_loss: 0.6996 - val_auc: 0.9188\n",
+            "Epoch 24/50\n",
+            "45/45 [==============================] - 26s 571ms/step - loss: 0.0011 - auc: 1.0000 - val_loss: 0.7353 - val_auc: 0.9195\n",
+            "Epoch 25/50\n",
+            "45/45 [==============================] - 25s 566ms/step - loss: 0.0026 - auc: 1.0000 - val_loss: 0.8810 - val_auc: 0.9052\n",
+            "Epoch 26/50\n",
+            "45/45 [==============================] - 25s 566ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 0.7474 - val_auc: 0.9120\n",
+            "Epoch 27/50\n",
+            "45/45 [==============================] - 26s 571ms/step - loss: 0.0050 - auc: 1.0000 - val_loss: 0.6203 - val_auc: 0.9216\n",
+            "Epoch 28/50\n",
+            "45/45 [==============================] - 27s 600ms/step - loss: 0.0025 - auc: 1.0000 - val_loss: 0.9996 - val_auc: 0.8956\n",
+            "Epoch 29/50\n",
+            "45/45 [==============================] - 26s 572ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 0.7394 - val_auc: 0.9155\n",
+            "Epoch 30/50\n",
+            "45/45 [==============================] - 26s 571ms/step - loss: 0.0190 - auc: 0.9985 - val_loss: 4.7736 - val_auc: 0.7034\n",
+            "Epoch 31/50\n",
+            "45/45 [==============================] - 26s 573ms/step - loss: 0.3510 - auc: 0.9675 - val_loss: 1.2273 - val_auc: 0.8918\n",
+            "Epoch 32/50\n",
+            "45/45 [==============================] - 25s 565ms/step - loss: 0.0289 - auc: 0.9990 - val_loss: 0.8943 - val_auc: 0.9111\n",
+            "Epoch 33/50\n",
+            "45/45 [==============================] - 26s 568ms/step - loss: 0.0063 - auc: 1.0000 - val_loss: 0.9647 - val_auc: 0.9035\n",
+            "Epoch 34/50\n",
+            "45/45 [==============================] - 27s 596ms/step - loss: 0.0044 - auc: 1.0000 - val_loss: 0.9574 - val_auc: 0.9044\n",
+            "Epoch 35/50\n",
+            "45/45 [==============================] - 25s 567ms/step - loss: 0.0056 - auc: 1.0000 - val_loss: 1.0125 - val_auc: 0.9023\n",
+            "Epoch 36/50\n",
+            "45/45 [==============================] - 26s 571ms/step - loss: 0.0048 - auc: 1.0000 - val_loss: 1.0963 - val_auc: 0.8931\n",
+            "Epoch 37/50\n",
+            "45/45 [==============================] - 25s 564ms/step - loss: 0.0037 - auc: 1.0000 - val_loss: 1.0286 - val_auc: 0.8974\n",
+            "Epoch 38/50\n",
+            "45/45 [==============================] - 36s 807ms/step - loss: 0.0016 - auc: 1.0000 - val_loss: 1.1320 - val_auc: 0.8958\n",
+            "Epoch 39/50\n",
+            "45/45 [==============================] - 26s 573ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.1095 - val_auc: 0.8946\n",
+            "Epoch 40/50\n",
+            "45/45 [==============================] - 26s 569ms/step - loss: 0.0026 - auc: 1.0000 - val_loss: 1.1000 - val_auc: 0.8930\n",
+            "Epoch 41/50\n",
+            "45/45 [==============================] - 26s 571ms/step - loss: 0.0013 - auc: 1.0000 - val_loss: 1.1496 - val_auc: 0.8925\n",
+            "Epoch 42/50\n",
+            "45/45 [==============================] - 27s 599ms/step - loss: 0.0034 - auc: 1.0000 - val_loss: 1.2129 - val_auc: 0.8924\n",
+            "Epoch 43/50\n",
+            "45/45 [==============================] - 26s 573ms/step - loss: 0.0027 - auc: 1.0000 - val_loss: 1.1295 - val_auc: 0.8920\n",
+            "Epoch 44/50\n",
+            "45/45 [==============================] - 26s 568ms/step - loss: 0.0026 - auc: 1.0000 - val_loss: 1.2049 - val_auc: 0.8894\n",
+            "Epoch 45/50\n",
+            "45/45 [==============================] - 25s 564ms/step - loss: 0.0050 - auc: 0.9993 - val_loss: 1.1343 - val_auc: 0.8908\n",
+            "Epoch 46/50\n",
+            "45/45 [==============================] - 26s 572ms/step - loss: 0.0020 - auc: 1.0000 - val_loss: 1.1379 - val_auc: 0.8913\n",
+            "Epoch 47/50\n",
+            "45/45 [==============================] - 26s 569ms/step - loss: 9.6929e-04 - auc: 1.0000 - val_loss: 1.1995 - val_auc: 0.8908\n",
+            "Epoch 48/50\n",
+            "45/45 [==============================] - 26s 584ms/step - loss: 0.0025 - auc: 1.0000 - val_loss: 1.2366 - val_auc: 0.8906\n",
+            "Epoch 49/50\n",
+            "45/45 [==============================] - 25s 564ms/step - loss: 0.0032 - auc: 1.0000 - val_loss: 1.1599 - val_auc: 0.8899\n",
+            "Epoch 50/50\n",
+            "45/45 [==============================] - 27s 598ms/step - loss: 0.0037 - auc: 1.0000 - val_loss: 1.3901 - val_auc: 0.8821\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = model.predict(testing_padded)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "iNJik4KSDB9c",
+        "outputId": "733e9c21-c0cf-4067-ed71-1cf8b404d983"
+      },
+      "execution_count": 33,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "22/22 [==============================] - 1s 60ms/step\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "y_pred = (y_pred >= 0.5)"
+      ],
+      "metadata": {
+        "id": "Ne3k--goDO0a"
+      },
+      "execution_count": 34,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(classification_report(y_test,y_pred))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Hz_vbQo4DYQh",
+        "outputId": "7f368d6e-f719-4065-e18c-08a665c84022"
+      },
+      "execution_count": 35,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "              precision    recall  f1-score   support\n",
+            "\n",
+            "           0       0.92      0.75      0.83       400\n",
+            "           1       0.73      0.91      0.81       304\n",
+            "\n",
+            "    accuracy                           0.82       704\n",
+            "   macro avg       0.83      0.83      0.82       704\n",
+            "weighted avg       0.84      0.82      0.82       704\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print('ROC AUC: ', roc_auc_score(y_test,model.predict(testing_padded)))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "DodJc8mqDZuS",
+        "outputId": "d80145d9-32a6-4a87-aceb-e6e001cc0886"
+      },
+      "execution_count": 36,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "22/22 [==============================] - 2s 80ms/step\n",
+            "ROC AUC:  0.9250657894736842\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Performance across all three models was relatively similar as measured by ROC AUC, our key threshsold independant metric. As such, increasing the dimentionality of the model and the length of each sequnce appears to have had little impact on model performance. All told, the 200 dimention model with a sequnce length of 300 was the most impressive performer with an ROC AUC of 0.931. This was followed closely by the 500 dimention model (sequence length = 500) which produced an ROC AUC of 0.925 and the 100 dimention model (sequnce length = 200) which clcoked in at 0.916. I was quite impressed with these results and look forward to what can be done with a larger corpus of data. Likewise, it does not appear as though the number of epochs passed though the model had any significant impact on performance"
+      ],
+      "metadata": {
+        "id": "XrQULr3TDd2G"
+      }
+    }
+  ]
+}
